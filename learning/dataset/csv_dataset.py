@@ -26,7 +26,7 @@ class CSVDataset(Dataset):
 
         
     def __len__(self):
-        return len(self.data) - self.cfg.sequence_length
+        return len(self.input) - self.cfg.sequence_length
 
     def __getitem__(self, index):
         '''

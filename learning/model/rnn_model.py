@@ -9,12 +9,6 @@ class RNNModel(lightning.LightningModule):
         # Cache the model config
         self.cfg = model_cfg
 
-        # Get optimizer
-        self.optimizer = self._get_optimizer(optimizer_cfg)
-
-        # Get criterion
-        self.criterion = self._get_criterion(optimizer_cfg)
-
         # Initialize the Encoder
         rnn: torch.nn.LSTM | torch.nn.GRU = getattr(torch.nn, self.cfg.rnn_type)
         self.encoder = rnn(
@@ -53,20 +47,38 @@ class RNNModel(lightning.LightningModule):
 
         # Add output layer
         # layers.append(torch.nn.BatchNorm1d(hidden_architecture[-1]['hidden_dimension']))
-        layers.append(torch.nn.Linear(hidden_architecture[-1]['hidden_dimension'], self.output_dim))
+        layers.append(torch.nn.Linear(hidden_architecture[-1]['hidden_dimension'], self.cfg.output_dim))
 
         # Initialize the decoder
         self.decoder = torch.nn.Sequential(*layers)
 
+        '''
+            Send the model to the device
+        '''
+        self.to(self.device)
+
+        # Get optimizer
+        self.optimizer = self._get_optimizer(optimizer_cfg)
+
+        # Get criterion
+        self.criterion = self._get_criterion(optimizer_cfg)
+
     def forward(self, x):
         _, (hidden, _) = self.encoder(x)
-        return self.decoder(hidden[-1])
+        return self.decoder(hidden)
 
     def training_step(self, batch, batch_idx):
         inputs, targets = batch
-        outputs = self(inputs.unsqueeze(-1))
+        outputs = self(inputs)
         loss = self.criterion(outputs, targets)
         self.log('train_loss', loss)
+        return loss
+    
+    def validation_step(self, batch, batch_idx):
+        inputs, targets = batch
+        outputs = self(inputs)
+        loss = self.criterion(outputs, targets)
+        self.log('val_loss', loss)
         return loss
 
     def configure_optimizers(self):
