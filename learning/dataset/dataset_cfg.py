@@ -2,7 +2,6 @@ import torch
 from typing import List, Optional, Dict
 
 class DatasetCfg:
-    sequence_length: int = 10
     is_shuffle: bool = True
     num_workers: int = 15
     input_name_list: List[str] = ["I1", "I2", "I3"]

@@ -43,7 +43,7 @@ class CSVDataset(Dataset):
         '''
 
         sample = (
-            torch.tensor(self.input[index : index + self.cfg.sequence_length], dtype=self.cfg.data_type),
-            torch.tensor(self.label[index + self.cfg.sequence_length], dtype=self.cfg.data_type),
+            torch.tensor(self.input[index], dtype=self.cfg.data_type),
+            torch.tensor(self.label[index], dtype=self.cfg.data_type),
         )
         return sample

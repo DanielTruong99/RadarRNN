@@ -9,15 +9,6 @@ class RNNModel(lightning.LightningModule):
         # Cache the model config
         self.cfg = model_cfg
 
-        # Initialize the Encoder
-        rnn: torch.nn.LSTM | torch.nn.GRU = getattr(torch.nn, self.cfg.rnn_type)
-        self.encoder = rnn(
-            input_size=self.cfg.input_dim,
-            hidden_size=self.cfg.hidden_dim,
-            num_layers=self.cfg.num_layers,
-            batch_first=True
-        )
-
         '''
             Initialize the Decoder
         '''
@@ -64,8 +55,7 @@ class RNNModel(lightning.LightningModule):
         self.criterion = self._get_criterion(optimizer_cfg)
 
     def forward(self, x):
-        _, (hidden, _) = self.encoder(x)
-        return self.decoder(hidden)
+        return self.decoder(x)
 
     def training_step(self, batch, batch_idx):
         inputs, targets = batch

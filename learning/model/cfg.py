@@ -11,10 +11,6 @@ class ModelCfg:
         {"hidden_dimension": 256, "activation": "elu", "pre_process": "BatchNorm1d"}, 
     ]
 
-    # Encoder architecture
-    rnn_type: str = "LSTM"
-    hidden_dim: int = 150
-    num_layers: int = 1
 
 class OptimizerCfg:
     learning_rate: float = 1e-3
